@@ -1,97 +1,115 @@
 <template>
-  <v-layout
-    column
-    justify-center
-    align-center
-  >
-    <v-flex
-      xs12
-      sm8
-      md6
-    >
-      <div class="text-center">
-        <logo />
-        <vuetify-logo />
-      </div>
+  <v-layout column justify-center align-center>
+    <v-flex xs12 sm8 md6>
       <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
+
+        <v-text-field type="text" v-model="name" placeholder="NAME"></v-text-field>
+        <v-text-field type="text" v-model="tel" placeholder="TEL"></v-text-field>
+        <v-btn @click="insertToContact(tel, name)">Add</v-btn>
+
+        <ul :key="key" v-for="(contact, key) in contacts">
+          <li>
+            {{contact.name}} : {{contact.tel}} {{key}}
+            <v-btn @click="deleteContact(key)">Delete</v-btn>
+          </li>
+        </ul>
+        <br />
+        <br />
+        <br />
+        <ul :key="key" v-for="(contact, key) in contacts">
+          <li v-if="updateKey === key">
+            <v-text-field type="text" v-model="updateName" placeholder="NAME"></v-text-field>
+            <v-text-field type="text" v-model="updateTel" placeholder="TEL"></v-text-field>
+            <v-btn @click="updateContact(updateTel, updateName)">Save</v-btn>
+          </li>
+          <li v-else>
+            {{contact.name}} : {{contact.tel}}
+            <v-btn @click="setUpdateContact(key, contact)">Update</v-btn>
+            <v-btn @click="deleteContact(key)">Delete</v-btn>
+          </li>
+        </ul>
       </v-card>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-import VuetifyLogo from '~/components/VuetifyLogo.vue'
+  import Logo from '@/components/Logo.vue'
+  import VuetifyLogo from '~/components/VuetifyLogo.vue'
+  import Swal from 'sweetalert2'
+  // var database = this.$fire.database()
+  // var contactRef = this.$fire.ref('/contacts')
 
-export default {
-  components: {
-    Logo,
-    VuetifyLogo
+
+  export default {
+    components: {
+      Logo,
+      VuetifyLogo
+    },
+    data() {
+      return {
+        contacts: {},
+        tel: '',
+        name: '',
+        contactRef: this.$fire.database.ref('/contacts'),
+        updateTel: '',
+        updateName: '',
+        updateKey: ''
+        // database : this.$fire.database(),
+
+
+      }
+    },
+    mounted() {
+
+      this.contactRef.on('value', (snapshot) => {
+        this.contacts = snapshot.val()
+      })
+    },
+    methods: {
+
+      async test() {
+        try {
+          await this.$fire.auth.createUserWithEmailAndPassword('foo@foo.foo', 'test1235')
+        } catch (e) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: e.message,
+            // footer: '<a href>Why do I have this issue?</a>'
+          })
+          console.log(e);
+        }
+      },
+      insertToContact(tel, name) {
+        // const contactRef = this.$fire.database.ref('/contacts');
+        let data = {
+          tel: tel,
+          name: name
+        }
+        this.contactRef.push(data)
+        this.tel = ''
+        this.name = ''
+      },
+      deleteContact(key) {
+        // const this.contactRef = this.$fire.database.ref('/contacts');
+        this.contactRef.child().remove()
+      },
+      setUpdateContact(key, contact) {
+        this.updateKey = key
+        this.updateTel = contact.tel
+        this.updateName = contact.name
+      },
+      updateContact(tel, name) {
+        this.contactRef.child(this.updateKey).update({
+          tel: tel,
+          name: name
+        })
+        this.updateKey = ''
+        this.updateTel = ''
+        this.updateName = ''
+      },
+    },
+
   }
-}
 </script>

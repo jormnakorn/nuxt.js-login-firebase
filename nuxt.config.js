@@ -37,6 +37,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    // { src: '~/plugins/vue-sweetalert2.js' },
   ],
   /*
   ** Auto import components
@@ -48,6 +49,7 @@ export default {
   */
   buildModules: [
     '@nuxtjs/vuetify',
+    // 'sweetalert2'
   ],
   /*
   ** Nuxt.js modules
@@ -56,7 +58,34 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    '@nuxtjs/firebase',
+    // 'vue-sweetalert2'
+    // 'nuxt-sweetalert2',
+    // '~/node_modules/sweetalert2/dist/sweetalert2.js',
   ],
+
+
+
+  firebase:{
+    config: {
+      apiKey: "AIzaSyDgi3zTyA9Fo-n2os2bPaRWy8sdEZvWHrY",
+      authDomain: "nuxtjs-login-firebase.firebaseapp.com",
+      databaseURL: "https://nuxtjs-login-firebase.firebaseio.com",
+      projectId: "nuxtjs-login-firebase",
+      storageBucket: "nuxtjs-login-firebase.appspot.com",
+      messagingSenderId: "184047807655",
+      appId: "1:184047807655:web:146a6c61f869e577187f82"
+    },
+    services: {
+      auth: true, // Just as example. Can be any other service.
+      firestore: true,
+      functions: true,
+      storage: true,
+      database: true,
+      messaging: true
+    }
+  },
+
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
@@ -69,9 +98,9 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      light: true,
       themes: {
-        dark: {
+        light: {
           primary: colors.blue.darken2,
           accent: colors.grey.darken3,
           secondary: colors.amber.darken3,
@@ -88,5 +117,6 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    // transpile:['sweetalert2']
   }
 }
